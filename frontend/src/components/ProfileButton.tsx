@@ -2,13 +2,13 @@ import { Menu } from '@mantine/core';
 import { IconLogout, IconMessage, IconSettings, IconTrash, IconUserCog } from '@tabler/icons-react';
 import { NavLink } from 'react-router-dom';
 import { ConfirmDialog } from 'src/components/ConfirmDialog';
+import { UserProfileModal } from 'src/components/UserProfileModal';
 import { useLogoutUrl, useProfile } from 'src/hooks';
 import { useStateOfSelectedChatId } from 'src/pages/chat/state/chat';
 import { isMobile } from 'src/pages/utils';
 import { texts } from 'src/texts';
 import { Avatar } from './Avatar';
 import { useState } from 'react';
-import { Modal } from './Modal';
 
 interface ProfileButtonProps {
   onClearConversations?: () => void;
@@ -77,14 +77,7 @@ export const ProfileButton = ({ onClearConversations, section }: ProfileButtonPr
         </Menu.Item>
       </Menu.Dropdown>
 
-      {isUserModalOpen && (
-        <Modal header="User Information" onClose={() => setIsUserModalOpen(false)}>
-          <div className="text-center">
-            <h3 className="mb-2 text-lg font-semibold">Welcome {profile.name}</h3>
-            <p className="text-gray-600">{profile.email}</p>
-          </div>
-        </Modal>
-)}
+      <UserProfileModal isOpen={isUserModalOpen} onClose={() => setIsUserModalOpen(false)} />
     </Menu>
   );
 };
