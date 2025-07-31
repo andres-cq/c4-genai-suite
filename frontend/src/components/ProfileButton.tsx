@@ -9,6 +9,7 @@ import { isMobile } from 'src/pages/utils';
 import { texts } from 'src/texts';
 import { Avatar } from './Avatar';
 import { useState } from 'react';
+import { useAuthSettings } from 'src/hooks/useAuthSettings';
 
 interface ProfileButtonProps {
   onClearConversations?: () => void;
@@ -20,6 +21,8 @@ export const ProfileButton = ({ onClearConversations, section }: ProfileButtonPr
   const logoutUrl = useLogoutUrl();
   const chatId = useStateOfSelectedChatId();
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+  const { data: authSettings } = useAuthSettings();
 
   return (
     <Menu width={250}>
@@ -45,7 +48,7 @@ export const ProfileButton = ({ onClearConversations, section }: ProfileButtonPr
           </Menu.Item>
         )}
 
-        {section === 'chat' && (
+        {section === 'chat' && authSettings?.enablePasswordAuth && (
           <Menu.Item leftSection={<IconSettings size={14} />} onClick={() => setIsUserModalOpen(true)}>
             Settings
           </Menu.Item>
