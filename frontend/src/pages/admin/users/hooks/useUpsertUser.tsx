@@ -14,7 +14,7 @@ export function useUpsertUser(api: AppClient, target: UserDto | null, onUpsert: 
       }
     },
     onSuccess: (response) => {
-      if(target && target.id === currentProfile.id){
+      if (target && target.id === currentProfile.id) {
         queryClient.invalidateQueries({
           queryKey: ['profile'],
         });

@@ -1,25 +1,26 @@
-import { useEffect, useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import * as Yup from 'yup';
-import { Modal, Forms, FormAlert } from 'src/components';
-import { useProfile } from 'src/hooks';
-import { useApi, UpsertUserDto } from 'src/api';
-import { texts } from 'src/texts';
-import { toast } from 'react-toastify';
 import { Button, Tabs } from '@mantine/core';
 import { IconLock, IconUser } from '@tabler/icons-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import * as Yup from 'yup';
+import { UpsertUserDto, useApi } from 'src/api';
+import { FormAlert, Forms, Modal } from 'src/components';
+import { useProfile } from 'src/hooks';
+import { texts } from 'src/texts';
 
 const PASSWORD_CHANGE_SCHEMA = Yup.object({
-  password: Yup.string().label(texts.common.password),
+  currentPassword: Yup.string().label('Current Password').required(texts.common.required),
+  password: Yup.string().label(texts.common.password).required(texts.common.required),
   passwordConfirm: Yup.string()
     .label(texts.common.passwordConfirm)
-    .oneOf([Yup.ref('password'), '', undefined], texts.common.passwordsDoNotMatch),
+    .oneOf([Yup.ref('password'), '', undefined], texts.common.passwordsDoNotMatch)
+    .required(texts.common.required),
 });
 
 const PASSWORD_RESOLVER = yupResolver<any>(PASSWORD_CHANGE_SCHEMA);
-
 interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -31,13 +32,13 @@ export function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'personal' | 'security'>('personal');
 
-  const passwordForm = useForm<{ password?: string; passwordConfirm?: string }>({
+  const passwordForm = useForm<{ currentPassword?: string; password?: string; passwordConfirm?: string }>({
     resolver: PASSWORD_RESOLVER,
-    defaultValues: { password: '', passwordConfirm: '' },
+    defaultValues: { currentPassword: '', password: '', passwordConfirm: '' },
   });
 
   const updatePassword = useMutation({
-    mutationFn: async (request: { password?: string }) => {
+    mutationFn: async (request: { currentPassword?: string; password?: string }) => {
       const fullUserData = await api.users.getUser(profile.id);
 
       const updateData: UpsertUserDto = {
@@ -46,6 +47,7 @@ export function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
         userGroupId: fullUserData.userGroupId,
         password: request.password,
         apiKey: fullUserData.apiKey,
+        currentPassword: request.currentPassword,
       };
       return api.users.putUser(profile.id, updateData);
     },
@@ -60,15 +62,16 @@ export function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
     },
   });
 
-  const handlePasswordSubmit = (data: { password?: string; passwordConfirm?: string }) => {
+  const handlePasswordSubmit = (data: { currentPassword?: string; password?: string; passwordConfirm?: string }) => {
     if (data.password) {
-      updatePassword.mutate({ password: data.password });
+      updatePassword.mutate({ password: data.password, currentPassword: data.currentPassword });
     }
   };
 
   useEffect(() => {
     if (!isOpen) {
       passwordForm.reset({ password: '', passwordConfirm: '' });
+      updatePassword.reset();
     }
   }, [isOpen, passwordForm]);
 
@@ -106,6 +109,7 @@ export function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
           )}
 
           <div className="space-y-4">
+            <Forms.Password name="currentPassword" label="Current Password" placeholder="Enter current password" />
             <Forms.Password name="password" label={texts.common.password} placeholder="Enter new password" />
             <Forms.Password name="passwordConfirm" label={texts.common.passwordConfirm} placeholder="Confirm new password" />
           </div>
