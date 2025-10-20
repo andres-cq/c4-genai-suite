@@ -1,6 +1,6 @@
-import { Accordion, Button, Tabs } from '@mantine/core';
-import { IconEdit } from '@tabler/icons-react';
-import { useEffect, useRef } from 'react';
+import { Button, Tabs } from '@mantine/core';
+import { IconChevronDown, IconEdit } from '@tabler/icons-react';
+import { useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Route, Routes } from 'react-router-dom';
 
@@ -60,6 +60,7 @@ const getPanelSizes = (isRightPanelOpen: boolean) => {
 
 export function ChatPage() {
   const { theme } = useTheme();
+  const [isChatsExpanded, setIsChatsExpanded] = useState(true);
 
   const isMobileView = isMobile();
   useListOfEnabledAssistantsInit();
@@ -136,14 +137,16 @@ export function ChatPage() {
               </div>
 
               <div className="grow overflow-y-auto p-2">
-                <Accordion defaultValue="chats">
-                  <Accordion.Item value="chats">
-                    <Accordion.Control>Chats</Accordion.Control>
-                    <Accordion.Panel className="p-0">
-                      <ConversationItems />
-                    </Accordion.Panel>
-                  </Accordion.Item>
-                </Accordion>
+                <button
+                  onClick={() => setIsChatsExpanded(!isChatsExpanded)}
+                  className="flex w-full items-center gap-1 pb-1 pl-2 text-left text-sm font-normal hover:opacity-70 transition-opacity"
+                >
+                  <IconChevronDown
+                    className={`h-3 w-3 transition-transform ${isChatsExpanded ? '' : '-rotate-90'}`}
+                  />
+                  Chats
+                </button>
+                {isChatsExpanded && <ConversationItems />}
               </div>
               <div className="p-2" onClick={(e) => e.stopPropagation()}>
                 <ProfileButton section="chat" onClearConversations={removeAllChats.mutate} />
