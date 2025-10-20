@@ -1,4 +1,4 @@
-import { Button, Tabs } from '@mantine/core';
+import { Accordion, Button, Tabs } from '@mantine/core';
 import { IconEdit } from '@tabler/icons-react';
 import { useEffect, useRef } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
@@ -136,7 +136,14 @@ export function ChatPage() {
               </div>
 
               <div className="grow overflow-y-auto p-2">
-                <ConversationItems />
+                <Accordion defaultValue="chats">
+                  <Accordion.Item value="chats">
+                    <Accordion.Control>Chats</Accordion.Control>
+                    <Accordion.Panel className="p-0">
+                      <ConversationItems />
+                    </Accordion.Panel>
+                  </Accordion.Item>
+                </Accordion>
               </div>
               <div className="p-2" onClick={(e) => e.stopPropagation()}>
                 <ProfileButton section="chat" onClearConversations={removeAllChats.mutate} />
