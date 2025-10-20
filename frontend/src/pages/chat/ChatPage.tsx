@@ -137,15 +137,22 @@ export function ChatPage() {
               </div>
 
               <div className="grow overflow-y-auto p-2">
-                <button
+                <Button
+                  size="sm"
+                  p="xs"
                   onClick={() => setIsChatsExpanded(!isChatsExpanded)}
-                  className="flex w-full items-center gap-1 pb-1 pl-2 text-left text-sm font-normal hover:opacity-70 transition-opacity"
+                  fullWidth
+                  justify="flex-start"
+                  variant="subtle"
+                  leftSection={
+                    <IconChevronDown
+                      className={`h-4 w-4 transition-transform ${isChatsExpanded ? '' : '-rotate-90'}`}
+                    />
+                  }
+                  classNames={{ root: 'hover:opacity-70 transition-opacity' }}
                 >
-                  <IconChevronDown
-                    className={`h-3 w-3 transition-transform ${isChatsExpanded ? '' : '-rotate-90'}`}
-                  />
                   Chats
-                </button>
+                </Button>
                 {isChatsExpanded && <ConversationItems />}
               </div>
               <div className="p-2" onClick={(e) => e.stopPropagation()}>
