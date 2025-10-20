@@ -1,5 +1,5 @@
 import { Button, Tabs } from '@mantine/core';
-import { IconChevronDown, IconEdit } from '@tabler/icons-react';
+import { IconChevronDown, IconEdit, IconPlus } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Route, Routes } from 'react-router-dom';
@@ -25,6 +25,7 @@ import {
 } from './state/chat';
 import { useListOfChatsInit, useMutateNewChat, useStateMutateRemoveAllChats, useStateOfChatEmptiness } from './state/listOfChats';
 import { useUserBucket } from './useUserBucket';
+import { AddPromptModal } from './AddPromptModal';
 
 const CustomResizeHandle = () => (
   <PanelResizeHandle className="group ml-[-2px] flex w-2 items-center bg-gray-100 p-[2px] transition-all hover:bg-gray-200">
@@ -61,6 +62,8 @@ const getPanelSizes = (isRightPanelOpen: boolean) => {
 export function ChatPage() {
   const { theme } = useTheme();
   const [isChatsExpanded, setIsChatsExpanded] = useState(true);
+  const [isPromptsExpanded, setIsPromptsExpanded] = useState(false);
+  const [isAddPromptModalOpen, setIsAddPromptModalOpen] = useState(false);
 
   const isMobileView = isMobile();
   useListOfEnabledAssistantsInit();
@@ -136,6 +139,36 @@ export function ChatPage() {
                 </Button>
               </div>
 
+              <div className="p-2">
+                <Button
+                  size="sm"
+                  p="xs"
+                  onClick={() => setIsPromptsExpanded(!isPromptsExpanded)}
+                  fullWidth
+                  justify="space-between"
+                  variant="subtle"
+                  rightSection={
+                    <IconChevronDown className={`h-4 w-4 transition-transform ${isPromptsExpanded ? '' : '-rotate-90'}`} />
+                  }
+                  classNames={{ root: 'hover:opacity-70 transition-opacity' }}
+                >
+                  Prompts
+                </Button>
+                {isPromptsExpanded && (
+                  <div className="mt-2">
+                    <Button
+                      size="sm"
+                      variant="light"
+                      fullWidth
+                      leftSection={<IconPlus className="h-4 w-4" />}
+                      onClick={() => setIsAddPromptModalOpen(true)}
+                    >
+                      Add prompt
+                    </Button>
+                  </div>
+                )}
+              </div>
+
               <div className="grow overflow-y-auto p-2">
                 <Button
                   size="sm"
@@ -145,9 +178,7 @@ export function ChatPage() {
                   justify="space-between"
                   variant="subtle"
                   rightSection={
-                    <IconChevronDown
-                      className={`h-4 w-4 transition-transform ${isChatsExpanded ? '' : '-rotate-90'}`}
-                    />
+                    <IconChevronDown className={`h-4 w-4 transition-transform ${isChatsExpanded ? '' : '-rotate-90'}`} />
                   }
                   classNames={{ root: 'hover:opacity-70 transition-opacity' }}
                 >
@@ -237,6 +268,15 @@ export function ChatPage() {
           </>
         )}
       </PanelGroup>
+      {isAddPromptModalOpen && (
+        <AddPromptModal
+          onClose={() => setIsAddPromptModalOpen(false)}
+          onSave={(title, prompt) => {
+            // TODO: Implement save prompt functionality
+            console.log('Saving prompt:', { title, prompt });
+          }}
+        />
+      )}
     </div>
   );
 }
