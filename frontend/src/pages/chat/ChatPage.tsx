@@ -142,9 +142,9 @@ export function ChatPage() {
                   p="xs"
                   onClick={() => setIsChatsExpanded(!isChatsExpanded)}
                   fullWidth
-                  justify="flex-start"
+                  justify="space-between"
                   variant="subtle"
-                  leftSection={
+                  rightSection={
                     <IconChevronDown
                       className={`h-4 w-4 transition-transform ${isChatsExpanded ? '' : '-rotate-90'}`}
                     />
