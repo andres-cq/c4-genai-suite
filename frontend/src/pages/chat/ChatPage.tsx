@@ -1,5 +1,5 @@
 import { Button, Tabs } from '@mantine/core';
-import { IconChevronDown, IconEdit, IconPlus } from '@tabler/icons-react';
+import { IconChevronDown, IconEdit, IconMessage, IconPlus, IconTemplate } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Route, Routes } from 'react-router-dom';
@@ -43,7 +43,57 @@ const MOCK_PROMPTS = [
   },
   {
     id: '2',
-    title: 'Explain Like I\'m 5',
+    title: "Explain Like I'm 5",
+    content: 'Explain the following concept in simple terms that a 5-year-old could understand.',
+  },
+  {
+    id: '3',
+    title: 'Write Unit Tests',
+    content: 'Generate comprehensive unit tests for the following code, covering edge cases and error scenarios.',
+  },
+  {
+    id: '4',
+    title: 'Refactor Code',
+    content: 'Refactor this code to improve readability, maintainability, and performance.',
+  },
+  {
+    id: '5',
+    title: 'Documentation',
+    content: 'Write detailed documentation for this code including usage examples and parameter descriptions.',
+  },
+  {
+    id: '1',
+    title: 'Code Review',
+    content: 'Please review this code for best practices, potential bugs, and suggest improvements.',
+  },
+  {
+    id: '2',
+    title: "Explain Like I'm 5",
+    content: 'Explain the following concept in simple terms that a 5-year-old could understand.',
+  },
+  {
+    id: '3',
+    title: 'Write Unit Tests',
+    content: 'Generate comprehensive unit tests for the following code, covering edge cases and error scenarios.',
+  },
+  {
+    id: '4',
+    title: 'Refactor Code',
+    content: 'Refactor this code to improve readability, maintainability, and performance.',
+  },
+  {
+    id: '5',
+    title: 'Documentation',
+    content: 'Write detailed documentation for this code including usage examples and parameter descriptions.',
+  },
+  {
+    id: '1',
+    title: 'Code Review',
+    content: 'Please review this code for best practices, potential bugs, and suggest improvements.',
+  },
+  {
+    id: '2',
+    title: "Explain Like I'm 5",
     content: 'Explain the following concept in simple terms that a 5-year-old could understand.',
   },
   {
@@ -146,86 +196,89 @@ export function ChatPage() {
         {sidebarLeft && (
           <>
             <Panel
-              className="chat-conversations flex w-64 shrink-0 flex-col overflow-hidden bg-gray-100"
+              className="chat-conversations flex w-64 shrink-0 flex-col bg-gray-100"
               id="left"
               order={0}
-              style={{ overflow: 'auto' }}
               onClick={() => {
                 if (isMobileView) setSidebarLeft(false);
               }}
               {...panelSizes.left}
             >
-              <div className="p-2">
-                <Button
-                  className="justify-start"
-                  variant="subtle"
-                  p="xs"
-                  onClick={openNewChatIfNeeded}
-                  fullWidth
-                  justify="space-between"
-                  rightSection={<IconEdit className="w-4" />}
-                >
-                  {texts.chat.newChat}
-                </Button>
-              </div>
+              <div className="flex flex-col overflow-y-auto flex-1">
+                <div className="p-2">
+                  <Button
+                    className="justify-start"
+                    variant="subtle"
+                    p="xs"
+                    onClick={openNewChatIfNeeded}
+                    fullWidth
+                    justify="space-between"
+                    rightSection={<IconEdit className="w-4" />}
+                  >
+                    {texts.chat.newChat}
+                  </Button>
+                </div>
 
-              <div className="p-2">
-                <Button
-                  size="sm"
-                  p="xs"
-                  onClick={() => setIsPromptsExpanded(!isPromptsExpanded)}
-                  fullWidth
-                  justify="space-between"
-                  variant="subtle"
-                  rightSection={
-                    <IconChevronDown className={`h-4 w-4 transition-transform ${isPromptsExpanded ? '' : '-rotate-90'}`} />
-                  }
-                  classNames={{ root: 'hover:opacity-70 transition-opacity' }}
-                >
-                  Prompts
-                </Button>
-                {isPromptsExpanded && (
-                  <div className="mt-2 flex flex-col gap-1">
-                    <Button
-                      size="sm"
-                      variant="light"
-                      fullWidth
-                      leftSection={<IconPlus className="h-4 w-4" />}
-                      onClick={() => setIsAddPromptModalOpen(true)}
-                    >
-                      Add prompt
-                    </Button>
+                <div className="p-2">
+                  <Button
+                    size="sm"
+                    p="xs"
+                    onClick={() => setIsPromptsExpanded(!isPromptsExpanded)}
+                    fullWidth
+                    justify="start"
+                    variant="subtle"
+                    leftSection={<IconTemplate className="h-4 w-4" />}
+                    rightSection={
+                      <IconChevronDown className={`h-4 w-4 transition-transform ${isPromptsExpanded ? '' : '-rotate-90'}`} />
+                    }
+                    classNames={{ root: 'hover:opacity-70 transition-opacity' }}
+                  >
+                    <span className="font-semibold">Prompts</span>
+                  </Button>
+                  {isPromptsExpanded && (
                     <div className="mt-2 flex flex-col gap-1">
-                      {MOCK_PROMPTS.map((prompt) => (
-                        <PromptItem
-                          key={prompt.id}
-                          prompt={prompt}
-                          onSelect={(p) => console.log('Selected prompt:', p)}
-                          onEdit={(p) => console.log('Edit prompt:', p)}
-                          onDelete={(id) => console.log('Delete prompt:', id)}
-                        />
-                      ))}
+                      <Button
+                        size="sm"
+                        variant="light"
+                        fullWidth
+                        leftSection={<IconPlus className="h-4 w-4" />}
+                        onClick={() => setIsAddPromptModalOpen(true)}
+                      >
+                        Add prompt
+                      </Button>
+                      <div className="mt-2 flex flex-col gap-1">
+                        {MOCK_PROMPTS.map((prompt) => (
+                          <PromptItem
+                            key={prompt.id}
+                            prompt={prompt}
+                            onSelect={(p) => console.log('Selected prompt:', p)}
+                            onEdit={(p) => console.log('Edit prompt:', p)}
+                            onDelete={(id) => console.log('Delete prompt:', id)}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
 
-              <div className="grow overflow-y-auto p-2">
-                <Button
-                  size="sm"
-                  p="xs"
-                  onClick={() => setIsChatsExpanded(!isChatsExpanded)}
-                  fullWidth
-                  justify="space-between"
-                  variant="subtle"
-                  rightSection={
-                    <IconChevronDown className={`h-4 w-4 transition-transform ${isChatsExpanded ? '' : '-rotate-90'}`} />
-                  }
-                  classNames={{ root: 'hover:opacity-70 transition-opacity' }}
-                >
-                  Chats
-                </Button>
-                {isChatsExpanded && <ConversationItems />}
+                <div className="p-2">
+                  <Button
+                    size="sm"
+                    p="xs"
+                    onClick={() => setIsChatsExpanded(!isChatsExpanded)}
+                    fullWidth
+                    justify="start"
+                    variant="subtle"
+                    leftSection={<IconMessage className="h-4 w-4" />}
+                    rightSection={
+                      <IconChevronDown className={`h-4 w-4 transition-transform ${isChatsExpanded ? '' : '-rotate-90'}`} />
+                    }
+                    classNames={{ root: 'hover:opacity-70 transition-opacity' }}
+                  >
+                    <span className="font-semibold">Chats</span>
+                  </Button>
+                  {isChatsExpanded && <ConversationItems />}
+                </div>
               </div>
               <div className="p-2" onClick={(e) => e.stopPropagation()}>
                 <ProfileButton section="chat" onClearConversations={removeAllChats.mutate} />

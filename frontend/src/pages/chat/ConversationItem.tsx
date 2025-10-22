@@ -58,7 +58,7 @@ export const ConversationItem = memo(({ chat }: ChatProps) => {
       fullWidth
       justify="space-between"
       variant={isSelected ? 'filled' : 'subtle'}
-      classNames={{ root: 'relative group transition-all' }}
+      classNames={{ root: 'relative group transition-all', label: 'text-xs' }}
       role="navigation"
       onDoubleClick={() => isSelected && setShowRenameInput(true)}
     >
