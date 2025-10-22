@@ -1,5 +1,5 @@
 import { Button, Tabs } from '@mantine/core';
-import { IconChevronDown, IconEdit, IconMessage, IconPlus, IconTemplate } from '@tabler/icons-react';
+import { IconChevronDown, IconEdit, IconMessage, IconPlus, IconPrompt, IconTemplate } from '@tabler/icons-react';
 import { useEffect, useRef, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { Route, Routes } from 'react-router-dom';
@@ -204,7 +204,7 @@ export function ChatPage() {
               }}
               {...panelSizes.left}
             >
-              <div className="flex flex-col overflow-y-auto flex-1">
+              <div className="flex flex-1 flex-col overflow-y-auto">
                 <div className="p-2">
                   <Button
                     className="justify-start"
@@ -222,12 +222,11 @@ export function ChatPage() {
                 <div className="p-2">
                   <Button
                     size="sm"
-                    p="xs"
                     onClick={() => setIsPromptsExpanded(!isPromptsExpanded)}
                     fullWidth
                     justify="start"
                     variant="subtle"
-                    leftSection={<IconTemplate className="h-4 w-4" />}
+                    leftSection={<IconPrompt className="h-4 w-4" />}
                     rightSection={
                       <IconChevronDown className={`h-4 w-4 transition-transform ${isPromptsExpanded ? '' : '-rotate-90'}`} />
                     }
@@ -238,11 +237,12 @@ export function ChatPage() {
                   {isPromptsExpanded && (
                     <div className="mt-2 flex flex-col gap-1">
                       <Button
-                        size="sm"
+                        size="xs"
                         variant="light"
                         fullWidth
                         leftSection={<IconPlus className="h-4 w-4" />}
                         onClick={() => setIsAddPromptModalOpen(true)}
+                        classNames={{ label: 'text-xs' }}
                       >
                         Add prompt
                       </Button>

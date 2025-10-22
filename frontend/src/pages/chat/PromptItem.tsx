@@ -26,7 +26,7 @@ export const PromptItem = memo(({ prompt, onSelect, onEdit, onDelete }: PromptIt
       fullWidth
       justify="space-between"
       variant="subtle"
-      classNames={{ root: 'relative group transition-all' }}
+      classNames={{ root: 'relative group transition-all', label: 'text-xs' }}
     >
       {prompt.title}
       <div
