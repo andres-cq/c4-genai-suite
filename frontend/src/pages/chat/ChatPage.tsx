@@ -26,12 +26,42 @@ import {
 import { useListOfChatsInit, useMutateNewChat, useStateMutateRemoveAllChats, useStateOfChatEmptiness } from './state/listOfChats';
 import { useUserBucket } from './useUserBucket';
 import { AddPromptModal } from './AddPromptModal';
+import { PromptItem } from './PromptItem';
 
 const CustomResizeHandle = () => (
   <PanelResizeHandle className="group ml-[-2px] flex w-2 items-center bg-gray-100 p-[2px] transition-all hover:bg-gray-200">
     <div className="h-6 w-full rounded group-hover:bg-white" />
   </PanelResizeHandle>
 );
+
+// Mock prompts data
+const MOCK_PROMPTS = [
+  {
+    id: '1',
+    title: 'Code Review',
+    content: 'Please review this code for best practices, potential bugs, and suggest improvements.',
+  },
+  {
+    id: '2',
+    title: 'Explain Like I\'m 5',
+    content: 'Explain the following concept in simple terms that a 5-year-old could understand.',
+  },
+  {
+    id: '3',
+    title: 'Write Unit Tests',
+    content: 'Generate comprehensive unit tests for the following code, covering edge cases and error scenarios.',
+  },
+  {
+    id: '4',
+    title: 'Refactor Code',
+    content: 'Refactor this code to improve readability, maintainability, and performance.',
+  },
+  {
+    id: '5',
+    title: 'Documentation',
+    content: 'Write detailed documentation for this code including usage examples and parameter descriptions.',
+  },
+];
 
 const getPanelSizes = (isRightPanelOpen: boolean) => {
   const leftBarRatio = 15;
@@ -155,7 +185,7 @@ export function ChatPage() {
                   Prompts
                 </Button>
                 {isPromptsExpanded && (
-                  <div className="mt-2">
+                  <div className="mt-2 flex flex-col gap-1">
                     <Button
                       size="sm"
                       variant="light"
@@ -165,6 +195,17 @@ export function ChatPage() {
                     >
                       Add prompt
                     </Button>
+                    <div className="mt-2 flex flex-col gap-1">
+                      {MOCK_PROMPTS.map((prompt) => (
+                        <PromptItem
+                          key={prompt.id}
+                          prompt={prompt}
+                          onSelect={(p) => console.log('Selected prompt:', p)}
+                          onEdit={(p) => console.log('Edit prompt:', p)}
+                          onDelete={(id) => console.log('Delete prompt:', id)}
+                        />
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
