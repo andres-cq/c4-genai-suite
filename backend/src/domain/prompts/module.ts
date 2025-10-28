@@ -5,6 +5,7 @@ import { PromptEntity, PromptCategoryEntity } from '../database/entities';
 import {
   CreatePromptHandler,
   GetPromptsHandler,
+  GetPromptHandler,
   UpdatePromptHandler,
   DeletePromptHandler,
   GetCategoriesHandler,
@@ -20,7 +21,7 @@ const CommandHandlers = [
   IncrementUsageHandler,
 ];
 
-const QueryHandlers = [GetPromptsHandler, GetCategoriesHandler];
+const QueryHandlers = [GetPromptsHandler, GetPromptHandler, GetCategoriesHandler];
 
 @Module({
   imports: [CqrsModule, TypeOrmModule.forFeature([PromptEntity, PromptCategoryEntity])],
