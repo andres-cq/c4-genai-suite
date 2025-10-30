@@ -17,13 +17,8 @@ import { texts } from 'src/texts';
 import { useChatStore } from './zustand/chatStore';
 import { useListOfChatsStore } from './zustand/listOfChatsStore';
 
-let placeholderIdCounter = 1;
-
 const getMessagePlaceholderId = (messageType: StreamMessageSavedDtoMessageTypeEnum) => {
-  if (messageType === 'ai') {
-    return -placeholderIdCounter++;
-  }
-  return 0;
+  return messageType === 'ai' ? -1 : 0;
 };
 
 export const useChatStream = (chatId: number) => {
@@ -194,7 +189,18 @@ export const useChatStream = (chatId: number) => {
   };
 
   const stopStreaming = () => {
+    const chatData = chatStore.chatDataMap.get(chatId);
+    const streamingMessageId = chatData?.streamingMessageId;
+
     chatStore.cancelActiveStream(chatId);
+
+    // If the message still has the placeholder ID, assign it a real ID
+    // This prevents the next message from reusing the same placeholder ID
+    if (streamingMessageId && streamingMessageId < 0) {
+      // Use a negative real ID based on current timestamp
+      const realId = Math.floor(Date.now() / 1000) * -1;
+      chatStore.updateMessage(chatId, streamingMessageId, { id: realId });
+    }
   };
 
   return { sendMessage, stopStreaming, isChatLoading };
