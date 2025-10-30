@@ -17,8 +17,13 @@ import { texts } from 'src/texts';
 import { useChatStore } from './zustand/chatStore';
 import { useListOfChatsStore } from './zustand/listOfChatsStore';
 
+let placeholderIdCounter = 1;
+
 const getMessagePlaceholderId = (messageType: StreamMessageSavedDtoMessageTypeEnum) => {
-  return messageType === 'ai' ? -1 : 0;
+  if (messageType === 'ai') {
+    return -placeholderIdCounter++;
+  }
+  return 0;
 };
 
 export const useChatStream = (chatId: number) => {
@@ -188,7 +193,11 @@ export const useChatStream = (chatId: number) => {
     chatStore.setActiveStreamSubscription(chatId, subscription);
   };
 
-  return { sendMessage, isChatLoading };
+  const stopStreaming = () => {
+    chatStore.cancelActiveStream(chatId);
+  };
+
+  return { sendMessage, stopStreaming, isChatLoading };
 };
 
 export const useStateMutateChat = (chatId: number) => {

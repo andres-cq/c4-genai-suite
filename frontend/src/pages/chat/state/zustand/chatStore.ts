@@ -30,6 +30,7 @@ type ChatActions = {
     messageId: number,
     messageUpdate: Partial<ChatMessage> | ((oldMessage: ChatMessage) => Partial<ChatMessage>),
   ) => void;
+  removeMessage: (chatId: number, messageId: number) => void;
 
   setChat: (chatId: number, chat: ConversationDto) => void;
   initializeChatIfNeeded: (chatId: number) => void;
@@ -150,6 +151,17 @@ export const useChatStore = create<ChatState & ChatActions>()((set, get) => {
         if (!chatData) return state;
 
         const messages = [...chatData.messages, message];
+        const newMap = new Map(state.chatDataMap);
+        newMap.set(chatId, { ...chatData, messages });
+        return { chatDataMap: newMap };
+      }),
+
+    removeMessage: (chatId, messageId) =>
+      set((state) => {
+        const chatData = state.chatDataMap.get(chatId);
+        if (!chatData) return state;
+
+        const messages = chatData.messages.filter((msg) => msg.id !== messageId);
         const newMap = new Map(state.chatDataMap);
         newMap.set(chatId, { ...chatData, messages });
         return { chatDataMap: newMap };
