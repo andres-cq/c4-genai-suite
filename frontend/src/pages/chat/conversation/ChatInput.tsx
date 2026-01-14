@@ -12,6 +12,7 @@ import { Language, SpeechRecognitionButton } from 'src/pages/chat/conversation/S
 import { texts } from 'src/texts';
 import { useChatDropzone } from '../useChatDropzone';
 import { Suggestions } from './Suggestions';
+import { PromptTemplate } from 'src/types/prompt-template';
 import {
   getDefault,
   isExtensionWithUserArgs,
@@ -29,6 +30,9 @@ interface ChatInputProps {
   submitMessage: (input: string, files?: FileDto[]) => void;
   promptToInsert?: string | null;
   onPromptInserted?: () => void;
+  onOpenPromptLibrary?: () => void;
+  prompts?: PromptTemplate[];
+  onSelectPrompt?: (promptText: string, promptId?: number) => void;
 }
 export function ChatInput({ 
   textareaRef, 
@@ -39,6 +43,9 @@ export function ChatInput({
   submitMessage,
   promptToInsert,
   onPromptInserted,
+  onOpenPromptLibrary,
+  prompts = [],
+  onSelectPrompt,
 }: ChatInputProps) {
   const extensionsWithFilter = configuration?.extensions?.filter(isExtensionWithUserArgs) ?? [];
   const { updateContext, context } = useExtensionContext(chatId);
@@ -87,6 +94,9 @@ export function ChatInput({
   const { theme } = useTheme();
   const [input, setInput] = useState('');
   const [showFilter, setShowFilter] = useState(false);
+  const [showPromptSuggestions, setShowPromptSuggestions] = useState(false);
+  const [filteredPrompts, setFilteredPrompts] = useState<PromptTemplate[]>([]);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
 
   useEffect(() => {
     textareaRef?.current?.focus();
@@ -116,7 +126,31 @@ export function ChatInput({
   }));
 
   const doSetInput = useEventCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(event.target.value);
+    const newValue = event.target.value;
+    setInput(newValue);
+    
+    // Show prompt suggestions when user types /
+    if (prompts && prompts.length > 0 && onSelectPrompt) {
+      const trimmedValue = newValue.trim();
+      
+      if (trimmedValue.startsWith('/')) {
+        const searchQuery = trimmedValue.slice(1).toLowerCase();
+        
+        // Filter prompts by search query
+        const filtered = prompts.filter(prompt => 
+          prompt.title.toLowerCase().includes(searchQuery) ||
+          prompt.description?.toLowerCase().includes(searchQuery) ||
+          prompt.promptText.toLowerCase().includes(searchQuery)
+        ).slice(0, 5); // Show max 5 suggestions
+        
+        setFilteredPrompts(filtered);
+        setShowPromptSuggestions(filtered.length > 0);
+        setSelectedSuggestionIndex(0);
+      } else {
+        setShowPromptSuggestions(false);
+        setFilteredPrompts([]);
+      }
+    }
   });
 
   const doSetText = useEventCallback((text: string, chatFiles?: FileDto[]) => {
@@ -137,6 +171,40 @@ export function ChatInput({
   });
 
   const doKeyDown = useEventCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Handle prompt suggestions navigation
+    if (showPromptSuggestions && filteredPrompts.length > 0) {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setSelectedSuggestionIndex(prev => 
+          prev < filteredPrompts.length - 1 ? prev + 1 : prev
+        );
+        return;
+      }
+      
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setSelectedSuggestionIndex(prev => prev > 0 ? prev - 1 : 0);
+        return;
+      }
+      
+      if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey) {
+        event.preventDefault();
+        const selectedPrompt = filteredPrompts[selectedSuggestionIndex];
+        if (selectedPrompt && onSelectPrompt) {
+          onSelectPrompt(selectedPrompt.promptText, selectedPrompt.id);
+          setInput('');
+          setShowPromptSuggestions(false);
+        }
+        return;
+      }
+      
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setShowPromptSuggestions(false);
+        return;
+      }
+    }
+
     if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey) {
       doSubmit(event);
     }
@@ -237,7 +305,78 @@ export function ChatInput({
             ),
         )}
         <form onSubmit={doSubmit}>
-          <div className="box-border rounded-2xl border border-gray-200 p-4 pb-3 leading-none shadow-2xl shadow-gray-100 focus-within:border-gray-400">
+          <div className="box-border rounded-2xl border border-gray-200 p-4 pb-3 leading-none shadow-2xl shadow-gray-100 focus-within:border-gray-400 relative">
+            {/* Prompt Suggestions Dropdown */}
+            {showPromptSuggestions && filteredPrompts.length > 0 && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 rounded-lg border border-gray-200 bg-white shadow-lg overflow-hidden z-50">
+                <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-gray-700">
+                      Select a prompt (↑↓ to navigate, Enter to select, Esc to close)
+                    </span>
+                    {onOpenPromptLibrary && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onOpenPromptLibrary();
+                          setShowPromptSuggestions(false);
+                          setInput('');
+                        }}
+                        className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        Browse All
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div className="max-h-80 overflow-y-auto">
+                  {filteredPrompts.map((prompt, index) => (
+                    <div
+                      key={prompt.id}
+                      className={`px-4 py-3 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0 ${
+                        index === selectedSuggestionIndex
+                          ? 'bg-blue-50 border-l-4 border-l-blue-500'
+                          : 'hover:bg-gray-50 border-l-4 border-l-transparent'
+                      }`}
+                      onClick={() => {
+                        if (onSelectPrompt) {
+                          onSelectPrompt(prompt.promptText, prompt.id);
+                          setInput('');
+                          setShowPromptSuggestions(false);
+                        }
+                      }}
+                      onMouseEnter={() => setSelectedSuggestionIndex(index)}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-sm text-gray-900">
+                              {prompt.title}
+                            </span>
+                            {prompt.isFavorite && (
+                              <span className="text-yellow-500 text-xs">★</span>
+                            )}
+                          </div>
+                          {prompt.description && (
+                            <p className="text-xs text-gray-600 mb-1 line-clamp-1">
+                              {prompt.description}
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-500 font-mono line-clamp-2">
+                            {prompt.promptText}
+                          </p>
+                        </div>
+                        {prompt.category && (
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded whitespace-nowrap">
+                            {prompt.category}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             <TextareaAutosize
               className={`w-full resize-none bg-transparent pb-4 outline-none`}
               maxRows={15}
@@ -246,7 +385,9 @@ export function ChatInput({
               autoFocus
               onChange={doSetInput}
               onKeyDown={doKeyDown}
-              placeholder={texts.chat.placeholder(configuration?.name ?? '')}
+              placeholder={prompts && prompts.length > 0 
+                ? `${texts.chat.placeholder(configuration?.name ?? '')} (Type / to search prompts)` 
+                : texts.chat.placeholder(configuration?.name ?? '')}
               ref={textareaRef}
             />
             <div className="flex w-full justify-between gap-2">

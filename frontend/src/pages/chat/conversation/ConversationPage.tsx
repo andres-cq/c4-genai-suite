@@ -17,15 +17,19 @@ import { ChatInput } from './ChatInput';
 import { ChatRating } from './ChatRating';
 import { Configuration } from './Configuration';
 import { DragAndDropLayout } from './DragAndDropLayout/DragAndDropLayout';
+import { PromptTemplate } from 'src/types/prompt-template';
 
 interface ConversationPageProps {
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   promptToInsert?: string | null;
   onPromptInserted?: () => void;
+  onOpenPromptLibrary?: () => void;
+  prompts?: PromptTemplate[];
+  onSelectPrompt?: (promptText: string, promptId?: number) => void;
 }
 
 export function ConversationPage(props: ConversationPageProps) {
-  const { textareaRef, promptToInsert, onPromptInserted } = props;
+  const { textareaRef, promptToInsert, onPromptInserted, onOpenPromptLibrary, prompts, onSelectPrompt } = props;
 
   const chatParam = useParams<'id'>();
   const chatId = +chatParam.id!;
@@ -101,6 +105,9 @@ export function ConversationPage(props: ConversationPageProps) {
                 submitMessage={submitMessage}
                 promptToInsert={promptToInsert}
                 onPromptInserted={onPromptInserted}
+                onOpenPromptLibrary={onOpenPromptLibrary}
+                prompts={prompts}
+                onSelectPrompt={onSelectPrompt}
               />
               <div
                 data-testid={'scrollToBottomButton'}

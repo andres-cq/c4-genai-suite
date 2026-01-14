@@ -248,6 +248,9 @@ export function ChatPage() {
                       textareaRef={textareaRef} 
                       promptToInsert={promptToInsert}
                       onPromptInserted={() => setPromptToInsert(null)}
+                      onOpenPromptLibrary={() => setShowPromptLibrary(true)}
+                      prompts={prompts}
+                      onSelectPrompt={handleSelectPrompt}
                     />
                   } 
                 />
