@@ -20,10 +20,12 @@ import { DragAndDropLayout } from './DragAndDropLayout/DragAndDropLayout';
 
 interface ConversationPageProps {
   textareaRef: RefObject<HTMLTextAreaElement | null>;
+  promptToInsert?: string | null;
+  onPromptInserted?: () => void;
 }
 
 export function ConversationPage(props: ConversationPageProps) {
-  const { textareaRef } = props;
+  const { textareaRef, promptToInsert, onPromptInserted } = props;
 
   const chatParam = useParams<'id'>();
   const chatId = +chatParam.id!;
@@ -97,6 +99,8 @@ export function ConversationPage(props: ConversationPageProps) {
                 isDisabled={isAiWriting}
                 isEmpty={isNewConversation}
                 submitMessage={submitMessage}
+                promptToInsert={promptToInsert}
+                onPromptInserted={onPromptInserted}
               />
               <div
                 data-testid={'scrollToBottomButton'}

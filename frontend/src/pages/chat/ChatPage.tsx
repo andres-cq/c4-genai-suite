@@ -1,6 +1,6 @@
 import { Button, Tabs } from '@mantine/core';
-import { IconEdit } from '@tabler/icons-react';
-import { useEffect, useRef } from 'react';
+import { IconEdit, IconTemplate } from '@tabler/icons-react';
+import { useEffect, useRef, useState } from 'react';
 import { Group, Panel, Separator } from 'react-resizable-panels';
 import { Route, Routes } from 'react-router-dom';
 
@@ -25,6 +25,10 @@ import {
 } from './state/chat';
 import { useListOfChatsInit, useMutateNewChat, useStateMutateRemoveAllChats, useStateOfChatEmptiness } from './state/listOfChats';
 import { useUserBucket } from './useUserBucket';
+import { PromptLibraryModal } from './prompts/PromptLibraryModal';
+import { CreatePromptDialog } from './prompts/CreatePromptDialog';
+import { PromptTemplate } from 'src/types/prompt-template';
+import { MOCK_PROMPTS } from 'src/mock/prompt-templates';
 
 const CustomResizeHandle = () => (
   <Separator className="group ml-[-2px] flex w-2 items-center bg-gray-100 p-[2px] transition-all hover:bg-gray-200">
@@ -92,6 +96,78 @@ export function ChatPage() {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Prompt Library state
+  const [showPromptLibrary, setShowPromptLibrary] = useState(false);
+  const [showCreatePrompt, setShowCreatePrompt] = useState(false);
+  const [prompts, setPrompts] = useState<PromptTemplate[]>(MOCK_PROMPTS);
+  const [editingPrompt, setEditingPrompt] = useState<PromptTemplate | null>(null);
+  const [promptToInsert, setPromptToInsert] = useState<string | null>(null);
+
+  // Prompt Library handlers
+  const handleSelectPrompt = (promptText: string, promptId?: number) => {
+    // Increment usage count if we have the prompt ID
+    if (promptId) {
+      setPrompts(prev => prev.map(p => 
+        p.id === promptId ? { ...p, usageCount: p.usageCount + 1 } : p
+      ));
+    }
+    
+    setPromptToInsert(promptText);
+    textareaRef.current?.focus();
+  };
+
+  const handleSavePrompt = (prompt: Partial<PromptTemplate>) => {
+    if (editingPrompt) {
+      // Edit existing
+      setPrompts(prev => prev.map(p => 
+        p.id === editingPrompt.id 
+          ? { ...editingPrompt, ...prompt, updatedAt: new Date() } 
+          : p
+      ));
+    } else {
+      // Create new
+      const newPrompt: PromptTemplate = {
+        id: Math.max(...prompts.map(p => p.id), 0) + 1,
+        title: prompt.title!,
+        description: prompt.description,
+        category: prompt.category,
+        promptText: prompt.promptText!,
+        variables: prompt.variables,
+        isFavorite: false,
+        usageCount: 0,
+        userId: 'user1',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      setPrompts(prev => [newPrompt, ...prev]);
+    }
+    setEditingPrompt(null);
+  };
+
+  const handleDeletePrompt = (prompt: PromptTemplate) => {
+    if (window.confirm('Delete this prompt?')) {
+      setPrompts(prev => prev.filter(p => p.id !== prompt.id));
+    }
+  };
+
+  const handleToggleFavorite = (prompt: PromptTemplate) => {
+    setPrompts(prev => prev.map(p => 
+      p.id === prompt.id ? { ...p, isFavorite: !p.isFavorite } : p
+    ));
+  };
+
+  const handleDuplicatePrompt = (prompt: PromptTemplate) => {
+    const newPrompt: PromptTemplate = {
+      ...prompt,
+      id: Math.max(...prompts.map(p => p.id), 0) + 1,
+      title: `${prompt.title} (Copy)`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      usageCount: 0,
+    };
+    setPrompts(prev => [newPrompt, ...prev]);
+  };
+
   const openNewChatIfNeeded = async () => {
     if (selectedChatId) {
       if (await checkIfEmptyChat(selectedChatId)) textareaRef.current?.focus();
@@ -132,6 +208,16 @@ export function ChatPage() {
                 >
                   {texts.chat.newChat}
                 </Button>
+                <Button
+                  className="justify-start mt-2"
+                  variant="light"
+                  p="xs"
+                  onClick={() => setShowPromptLibrary(true)}
+                  fullWidth
+                  leftSection={<IconTemplate className="w-4" />}
+                >
+                  Prompt Library
+                </Button>
               </div>
 
               <div className="grow overflow-y-auto p-2">
@@ -155,7 +241,16 @@ export function ChatPage() {
             ) : (
               <Routes>
                 <Route path="" element={<NewChatRedirect />} />
-                <Route path=":id" element={<ConversationPage textareaRef={textareaRef} />} />
+                <Route 
+                  path=":id" 
+                  element={
+                    <ConversationPage 
+                      textareaRef={textareaRef} 
+                      promptToInsert={promptToInsert}
+                      onPromptInserted={() => setPromptToInsert(null)}
+                    />
+                  } 
+                />
               </Routes>
             )}
             {(!isMobileView || !rightPanelVisible) && (
@@ -219,6 +314,36 @@ export function ChatPage() {
           </>
         )}
       </Group>
+
+      {/* Prompt Library Modals */}
+      <PromptLibraryModal
+        opened={showPromptLibrary}
+        onClose={() => setShowPromptLibrary(false)}
+        onSelectPrompt={handleSelectPrompt}
+        prompts={prompts}
+        onCreatePrompt={() => {
+          setShowPromptLibrary(false);
+          setShowCreatePrompt(true);
+        }}
+        onEditPrompt={(prompt) => {
+          setEditingPrompt(prompt);
+          setShowPromptLibrary(false);
+          setShowCreatePrompt(true);
+        }}
+        onDeletePrompt={handleDeletePrompt}
+        onToggleFavorite={handleToggleFavorite}
+        onDuplicatePrompt={handleDuplicatePrompt}
+      />
+
+      <CreatePromptDialog
+        opened={showCreatePrompt}
+        onClose={() => {
+          setShowCreatePrompt(false);
+          setEditingPrompt(null);
+        }}
+        onSave={handleSavePrompt}
+        initialPrompt={editingPrompt}
+      />
     </div>
   );
 }

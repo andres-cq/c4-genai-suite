@@ -27,8 +27,19 @@ interface ChatInputProps {
   isDisabled?: boolean;
   isEmpty?: boolean;
   submitMessage: (input: string, files?: FileDto[]) => void;
+  promptToInsert?: string | null;
+  onPromptInserted?: () => void;
 }
-export function ChatInput({ textareaRef, chatId, configuration, isDisabled, isEmpty, submitMessage }: ChatInputProps) {
+export function ChatInput({ 
+  textareaRef, 
+  chatId, 
+  configuration, 
+  isDisabled, 
+  isEmpty, 
+  submitMessage,
+  promptToInsert,
+  onPromptInserted,
+}: ChatInputProps) {
   const extensionsWithFilter = configuration?.extensions?.filter(isExtensionWithUserArgs) ?? [];
   const { updateContext, context } = useExtensionContext(chatId);
   const [defaultValues, setDefaultValues] = useState<UserArgumentDefaultValueByExtensionIDAndName>({});
@@ -80,6 +91,19 @@ export function ChatInput({ textareaRef, chatId, configuration, isDisabled, isEm
   useEffect(() => {
     textareaRef?.current?.focus();
   }, [chatId, textareaRef]);
+
+  // Handle prompt insertion from Prompt Library
+  useEffect(() => {
+    if (promptToInsert) {
+      setInput(prev => {
+        // If there's existing text, add a newline before the prompt
+        const separator = prev.trim() ? '\n\n' : '';
+        return prev + separator + promptToInsert;
+      });
+      onPromptInserted?.();
+      textareaRef?.current?.focus();
+    }
+  }, [promptToInsert, onPromptInserted, textareaRef]);
 
   const contextWithDefaults = context ?? defaultValues;
   const extensionFilterChips = extensionsWithFilter.map((extension) => ({
