@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, Group, Modal, SegmentedControl, Stack, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Badge, Button, Group, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import { IconPlus, IconSearch, IconStar, IconX } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
 import { PromptCategory, PromptTemplate, PROMPT_CATEGORIES } from 'src/types/prompt-template';
@@ -161,17 +161,20 @@ export function PromptLibraryModal({
           />
 
           {/* Category Filter */}
-          <SegmentedControl
+          <Select
+            placeholder="Filter by category"
             value={categoryFilter}
-            onChange={setCategoryFilter}
+            onChange={(value) => setCategoryFilter(value || 'all')}
             data={[
-              { label: 'All', value: 'all' },
+              { label: 'All Categories', value: 'all' },
               ...PROMPT_CATEGORIES.map((cat) => ({
                 label: cat.label,
                 value: cat.value,
               })),
             ]}
-            fullWidth
+            clearable
+            searchable
+            allowDeselect={false}
           />
 
           {/* Prompt Grid */}
