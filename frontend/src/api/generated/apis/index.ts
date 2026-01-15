@@ -6,6 +6,7 @@ export * from './AuthApi';
 export * from './ConversationApi';
 export * from './ExtensionsApi';
 export * from './FilesApi';
+export * from './PromptsApi';
 export * from './SettingsApi';
 export * from './TranscriptionApi';
 export * from './UsagesApi';

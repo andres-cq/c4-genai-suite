@@ -4,6 +4,7 @@ apis/AuthApi.ts
 apis/ConversationApi.ts
 apis/ExtensionsApi.ts
 apis/FilesApi.ts
+apis/PromptsApi.ts
 apis/SettingsApi.ts
 apis/TranscriptionApi.ts
 apis/UsagesApi.ts
@@ -32,6 +33,7 @@ models/ConversationDto.ts
 models/ConversationsDto.ts
 models/CreateConversationDto.ts
 models/CreateExtensionDto.ts
+models/CreatePromptDto.ts
 models/DocumentDto.ts
 models/ExportedConfigurationDto.ts
 models/ExportedExtensionDto.ts
@@ -64,6 +66,7 @@ models/MessagesCountDto.ts
 models/MessagesCountsDto.ts
 models/MessagesDto.ts
 models/ProfileDto.ts
+models/PromptDto.ts
 models/RateMessageDto.ts
 models/RatingDto.ts
 models/RatingsDto.ts
