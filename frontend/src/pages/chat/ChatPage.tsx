@@ -9,7 +9,6 @@ import { NavigationBar } from 'src/components/NavigationBar';
 import { PdfViewer } from 'src/components/PdfViewer';
 import { useSidebarState, useTheme } from 'src/hooks';
 import { useConversationFiles } from 'src/hooks/api/files';
-import { CreatePromptDialog } from 'src/pages/chat/prompts/CreatePromptDialog';
 import { useListOfAllAssistantsInit, useListOfEnabledAssistantsInit } from 'src/pages/chat/state/listOfAssistants';
 import { texts } from 'src/texts';
 import { isMobile } from '../utils';
@@ -95,7 +94,6 @@ export function ChatPage() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [showPromptLibrary, setShowPromptLibrary] = useState(false);
-  const [showCreatePrompt, setShowCreatePrompt] = useState(false);
 
   const openNewChatIfNeeded = async () => {
     if (selectedChatId) {
@@ -235,21 +233,8 @@ export function ChatPage() {
         )}
       </Group>
 
-      {/* Prompt Library Modals */}
-      <PromptLibraryModal
-        opened={showPromptLibrary}
-        onClose={() => setShowPromptLibrary(false)}
-        onCreatePrompt={() => {
-          setShowPromptLibrary(false);
-          setShowCreatePrompt(true);
-        }}
-      />
-      <CreatePromptDialog
-        opened={showCreatePrompt}
-        onClose={() => {
-          setShowCreatePrompt(false);
-        }}
-      />
+      {/* Prompt Library Modal */}
+      <PromptLibraryModal opened={showPromptLibrary} onClose={() => setShowPromptLibrary(false)} />
     </div>
   );
 }
