@@ -1430,6 +1430,37 @@
         "tags": ["files"]
       }
     },
+    "/api/prompts": {
+      "post": {
+        "description": "Create a new prompt.",
+        "operationId": "createPrompt",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePromptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": ["prompts"]
+      }
+    },
     "/api/settings/{imageType}": {
       "get": {
         "description": "Gets the logo.",
@@ -3979,6 +4010,64 @@
           }
         },
         "required": ["items", "total"]
+      },
+      "CreatePromptDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the prompt."
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the prompt."
+          },
+          "promptText": {
+            "type": "string",
+            "description": "The prompt text."
+          }
+        },
+        "required": ["title", "promptText"]
+      },
+      "PromptDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "The ID of the prompt."
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the prompt."
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the prompt."
+          },
+          "promptText": {
+            "type": "string",
+            "description": "The prompt text."
+          },
+          "isFavorite": {
+            "type": "boolean",
+            "description": "Whether the prompt is favorited."
+          },
+          "userId": {
+            "type": "string",
+            "description": "The user ID who created the prompt."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "The creation timestamp.",
+            "format": "date"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "The last update timestamp.",
+            "format": "date"
+          }
+        },
+        "required": ["id", "title", "promptText", "isFavorite", "userId", "createdAt", "updatedAt"]
       },
       "SiteLinkDto": {
         "type": "object",
