@@ -6,6 +6,7 @@ export * from './extension';
 export * from './file';
 export * from './bucket';
 export * from './message';
+export * from './prompt';
 export * from './session';
 export * from './setting';
 export * from './usage';
