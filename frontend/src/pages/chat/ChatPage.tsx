@@ -1,6 +1,6 @@
 import { Button, Tabs } from '@mantine/core';
-import { IconEdit } from '@tabler/icons-react';
-import { useEffect, useRef } from 'react';
+import { IconEdit, IconTemplate } from '@tabler/icons-react';
+import { useEffect, useRef, useState } from 'react';
 import { Group, Panel, Separator } from 'react-resizable-panels';
 import { Route, Routes } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import { NavigationBar } from 'src/components/NavigationBar';
 import { PdfViewer } from 'src/components/PdfViewer';
 import { useSidebarState, useTheme } from 'src/hooks';
 import { useConversationFiles } from 'src/hooks/api/files';
+import { CreatePromptDialog } from 'src/pages/chat/prompts/CreatePromptDialog';
 import { useListOfAllAssistantsInit, useListOfEnabledAssistantsInit } from 'src/pages/chat/state/listOfAssistants';
 import { texts } from 'src/texts';
 import { isMobile } from '../utils';
@@ -17,6 +18,7 @@ import { NewChatRedirect } from './NewChatRedirect';
 import { SourcesChunkPreview } from './SourcesChunkPreview';
 import { ConversationPage } from './conversation/ConversationPage';
 import { Files } from './files/Files';
+import { PromptLibraryModal } from './prompts/PromptLibraryModal';
 import {
   useStateOfSelectedAssistantId,
   useStateOfSelectedChatId,
@@ -92,6 +94,9 @@ export function ChatPage() {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const [showPromptLibrary, setShowPromptLibrary] = useState(false);
+  const [showCreatePrompt, setShowCreatePrompt] = useState(false);
+
   const openNewChatIfNeeded = async () => {
     if (selectedChatId) {
       if (await checkIfEmptyChat(selectedChatId)) textareaRef.current?.focus();
@@ -135,7 +140,17 @@ export function ChatPage() {
                   >
                     {texts.chat.newChat}
                   </Button>
-                </div>
+                <Button
+                  className="mt-2 justify-start"
+                  variant="light"
+                  p="xs"
+                  onClick={() => setShowPromptLibrary(true)}
+                  fullWidth
+                  leftSection={<IconTemplate className="w-4" />}
+                >
+                  Prompt Library
+                </Button>
+              </div>
 
                 <div className="grow overflow-y-auto p-2">
                   <ConversationItems />
@@ -225,6 +240,22 @@ export function ChatPage() {
           </>
         )}
       </Group>
+
+      {/* Prompt Library Modals */}
+      <PromptLibraryModal
+        opened={showPromptLibrary}
+        onClose={() => setShowPromptLibrary(false)}
+        onCreatePrompt={() => {
+          setShowPromptLibrary(false);
+          setShowCreatePrompt(true);
+        }}
+      />
+      <CreatePromptDialog
+        opened={showCreatePrompt}
+        onClose={() => {
+          setShowCreatePrompt(false);
+        }}
+      />
     </div>
   );
 }
