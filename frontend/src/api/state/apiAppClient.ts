@@ -8,6 +8,7 @@ import {
   ExtensionsApi,
   FilesApi,
   Middleware,
+  PromptsApi,
   SendMessageDto,
   SettingsApi,
   StreamEventDto,
@@ -30,6 +31,7 @@ export class AppClient {
   public readonly conversations: ConversationApi;
   public readonly extensions: ExtensionsApi;
   public readonly files: FilesApi;
+  public readonly prompts: PromptsApi;
   public readonly settings: SettingsApi;
   public readonly stream: StreamApi;
   public readonly transcription: TranscriptionApi;
@@ -55,6 +57,8 @@ export class AppClient {
     this.extensions = new ExtensionsApi(configuration).withMiddleware(middleware);
 
     this.files = new FilesApi(configuration).withMiddleware(middleware);
+
+    this.prompts = new PromptsApi(configuration).withMiddleware(middleware);
 
     this.settings = new SettingsApi(configuration).withMiddleware(middleware);
 
