@@ -1,13 +1,16 @@
 import { ActionIcon, Badge, Card, Group, Menu, Text } from '@mantine/core';
 import { IconDotsVertical, IconStarFilled } from '@tabler/icons-react';
+import { PromptDto } from 'src/api';
 import { PROMPT_CATEGORIES, PromptTemplate } from 'src/types/prompt-template';
 
 interface PromptCardProps {
-  prompt: PromptTemplate;
+  prompt: PromptTemplate | PromptDto;
 }
 
 export function PromptCard({ prompt }: PromptCardProps) {
-  const categoryLabel = PROMPT_CATEGORIES.find((c) => c.value === prompt.category)?.label;
+  // Category is optional - only exists on PromptTemplate (mock data)
+  const category = 'category' in prompt ? prompt.category : undefined;
+  const categoryLabel = category ? PROMPT_CATEGORIES.find((c) => c.value === category)?.label : undefined;
 
   return (
     <Card shadow="sm" padding="md" radius="md" withBorder className="cursor-pointer transition-all hover:shadow-md">

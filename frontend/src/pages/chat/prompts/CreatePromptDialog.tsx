@@ -8,9 +8,10 @@ import { buildError } from 'src/lib';
 interface CreatePromptDialogProps {
   opened: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
 }
 
-export function CreatePromptDialog({ opened, onClose }: CreatePromptDialogProps) {
+export function CreatePromptDialog({ opened, onClose, onSuccess }: CreatePromptDialogProps) {
   const api = useApi();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -25,6 +26,7 @@ export function CreatePromptDialog({ opened, onClose }: CreatePromptDialogProps)
       }),
     onSuccess: () => {
       toast.success('Prompt created successfully!');
+      onSuccess?.();
       handleClose();
     },
     onError: async (error) => {

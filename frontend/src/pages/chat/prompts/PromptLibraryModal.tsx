@@ -1,10 +1,11 @@
-import { Button, Group, Modal, Stack, Text } from '@mantine/core';
+import { Button, Group, Loader, Modal, Stack, Text } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useApi } from 'src/api';
 import { MOCK_PROMPTS } from 'src/mock/prompt-templates';
 import { CreatePromptDialog } from 'src/pages/chat/prompts/CreatePromptDialog';
 import { PromptCard } from 'src/pages/chat/prompts/PromptCard';
-import { PromptTemplate } from 'src/types/prompt-template';
 
 interface PromptLibraryModalProps {
   opened: boolean;
@@ -12,8 +13,22 @@ interface PromptLibraryModalProps {
 }
 
 export function PromptLibraryModal({ opened, onClose }: PromptLibraryModalProps) {
-  const [prompts] = useState<PromptTemplate[]>(MOCK_PROMPTS);
+  const api = useApi();
   const [createPromptOpened, setCreatePromptOpened] = useState(false);
+
+  // Fetch user's prompts from API
+  const {
+    data: promptsData,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['prompts'],
+    queryFn: () => api.prompts.getPrompts(),
+    enabled: opened, // Only fetch when modal is open
+  });
+
+  // Combine user prompts (first) with mock prompts (after)
+  const prompts = [...(promptsData?.items ?? []), ...MOCK_PROMPTS];
 
   const handleClose = () => {
     onClose();
@@ -21,6 +36,10 @@ export function PromptLibraryModal({ opened, onClose }: PromptLibraryModalProps)
 
   const handleCreatePrompt = () => {
     setCreatePromptOpened(true);
+  };
+
+  const handleCreateSuccess = () => {
+    void refetch(); // Refresh the list after creating a prompt
   };
 
   return (
@@ -47,7 +66,11 @@ export function PromptLibraryModal({ opened, onClose }: PromptLibraryModalProps)
             </Button>
           </Group>
           {/* Prompts Grid*/}
-          {prompts.length === 0 ? (
+          {isLoading ? (
+            <div className="py-12 text-center">
+              <Loader size="md" />
+            </div>
+          ) : prompts.length === 0 ? (
             <div className="py-12 text-center">
               <Text size="sm" c="dimmed">
                 No prompts yet. Create your first prompt!
@@ -63,7 +86,11 @@ export function PromptLibraryModal({ opened, onClose }: PromptLibraryModalProps)
         </Stack>
       </Modal>
 
-      <CreatePromptDialog opened={createPromptOpened} onClose={() => setCreatePromptOpened(false)} />
+      <CreatePromptDialog
+        opened={createPromptOpened}
+        onClose={() => setCreatePromptOpened(false)}
+        onSuccess={handleCreateSuccess}
+      />
     </>
   );
 }
