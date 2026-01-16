@@ -67,6 +67,7 @@ models/MessagesCountsDto.ts
 models/MessagesDto.ts
 models/ProfileDto.ts
 models/PromptDto.ts
+models/PromptsDto.ts
 models/RateMessageDto.ts
 models/RatingDto.ts
 models/RatingsDto.ts

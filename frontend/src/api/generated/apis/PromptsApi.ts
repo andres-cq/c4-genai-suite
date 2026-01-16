@@ -18,12 +18,15 @@ import * as runtime from '../runtime';
 import type {
   CreatePromptDto,
   PromptDto,
+  PromptsDto,
 } from '../models/index';
 import {
     CreatePromptDtoFromJSON,
     CreatePromptDtoToJSON,
     PromptDtoFromJSON,
     PromptDtoToJSON,
+    PromptsDtoFromJSON,
+    PromptsDtoToJSON,
 } from '../models/index';
 
 export interface CreatePromptRequest {
@@ -70,6 +73,34 @@ export class PromptsApi extends runtime.BaseAPI {
      */
     async createPrompt(createPromptDto: CreatePromptDto, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PromptDto> {
         const response = await this.createPromptRaw({ createPromptDto: createPromptDto }, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get all prompts for the current user.
+     * 
+     */
+    async getPromptsRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<PromptsDto>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/api/prompts`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => PromptsDtoFromJSON(jsonValue));
+    }
+
+    /**
+     * Get all prompts for the current user.
+     * 
+     */
+    async getPrompts(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<PromptsDto> {
+        const response = await this.getPromptsRaw(initOverrides);
         return await response.value();
     }
 

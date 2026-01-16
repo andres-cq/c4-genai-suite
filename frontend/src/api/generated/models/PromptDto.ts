@@ -51,12 +51,6 @@ export interface PromptDto {
      */
     isFavorite: boolean;
     /**
-     * The user ID who created the prompt.
-     * @type {string}
-     * @memberof PromptDto
-     */
-    userId: string;
-    /**
      * The creation timestamp.
      * @type {Date}
      * @memberof PromptDto
@@ -78,7 +72,6 @@ export function instanceOfPromptDto(value: object): value is PromptDto {
     if (!('title' in value) || value['title'] === undefined) return false;
     if (!('promptText' in value) || value['promptText'] === undefined) return false;
     if (!('isFavorite' in value) || value['isFavorite'] === undefined) return false;
-    if (!('userId' in value) || value['userId'] === undefined) return false;
     if (!('createdAt' in value) || value['createdAt'] === undefined) return false;
     if (!('updatedAt' in value) || value['updatedAt'] === undefined) return false;
     return true;
@@ -99,7 +92,6 @@ export function PromptDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean):
         'description': json['description'] == null ? undefined : json['description'],
         'promptText': json['promptText'],
         'isFavorite': json['isFavorite'],
-        'userId': json['userId'],
         'createdAt': (new Date(json['createdAt'])),
         'updatedAt': (new Date(json['updatedAt'])),
     };
@@ -116,7 +108,6 @@ export function PromptDtoToJSON(value?: PromptDto | null): any {
         'description': value['description'],
         'promptText': value['promptText'],
         'isFavorite': value['isFavorite'],
-        'userId': value['userId'],
         'createdAt': ((value['createdAt']).toISOString().substring(0,10)),
         'updatedAt': ((value['updatedAt']).toISOString().substring(0,10)),
     };

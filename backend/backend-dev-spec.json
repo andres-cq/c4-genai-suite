@@ -1595,6 +1595,25 @@
       }
     },
     "/api/prompts": {
+      "get": {
+        "description": "Get all prompts for the current user.",
+        "operationId": "getPrompts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": ["prompts"]
+      },
       "post": {
         "description": "Create a new prompt.",
         "operationId": "createPrompt",
@@ -4499,24 +4518,6 @@
         },
         "required": ["items", "total"]
       },
-      "CreatePromptDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "The title of the prompt."
-          },
-          "description": {
-            "type": "string",
-            "description": "The description of the prompt."
-          },
-          "promptText": {
-            "type": "string",
-            "description": "The prompt text."
-          }
-        },
-        "required": ["title", "promptText"]
-      },
       "PromptDto": {
         "type": "object",
         "properties": {
@@ -4540,10 +4541,6 @@
             "type": "boolean",
             "description": "Whether the prompt is favorited."
           },
-          "userId": {
-            "type": "string",
-            "description": "The user ID who created the prompt."
-          },
           "createdAt": {
             "type": "string",
             "description": "The creation timestamp.",
@@ -4555,7 +4552,38 @@
             "format": "date"
           }
         },
-        "required": ["id", "title", "promptText", "isFavorite", "userId", "createdAt", "updatedAt"]
+        "required": ["id", "title", "promptText", "isFavorite", "createdAt", "updatedAt"]
+      },
+      "PromptsDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "The list of prompts.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PromptDto"
+            }
+          }
+        },
+        "required": ["items"]
+      },
+      "CreatePromptDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the prompt."
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the prompt."
+          },
+          "promptText": {
+            "type": "string",
+            "description": "The prompt text."
+          }
+        },
+        "required": ["title", "promptText"]
       },
       "SiteLinkDto": {
         "type": "object",

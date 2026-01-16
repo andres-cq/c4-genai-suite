@@ -57,6 +57,7 @@ export * from './MessagesCountsDto';
 export * from './MessagesDto';
 export * from './ProfileDto';
 export * from './PromptDto';
+export * from './PromptsDto';
 export * from './RateMessageDto';
 export * from './RatingDto';
 export * from './RatingsDto';
