@@ -33,25 +33,32 @@ export class PromptDto {
   @ApiProperty({ description: 'Whether the prompt is favorited.', required: true })
   isFavorite!: boolean;
 
-  @ApiProperty({ description: 'The user ID who created the prompt.', required: true })
-  userId!: string;
-
   @ApiProperty({ description: 'The creation timestamp.', required: true, type: String, format: 'date' })
   createdAt!: Date;
 
   @ApiProperty({ description: 'The last update timestamp.', required: true, type: String, format: 'date' })
   updatedAt!: Date;
 
-  static fromDomain(source: Prompt): PromptDto {
+  static fromDomain(this: void, source: Prompt): PromptDto {
     const result = new PromptDto();
     result.id = source.id;
     result.title = source.title;
     result.description = source.description;
     result.promptText = source.promptText;
     result.isFavorite = source.isFavorite;
-    result.userId = source.userId;
     result.createdAt = source.createdAt;
     result.updatedAt = source.updatedAt;
+    return result;
+  }
+}
+
+export class PromptsDto {
+  @ApiProperty({ description: 'The list of prompts.', type: [PromptDto] })
+  items!: PromptDto[];
+
+  static fromDomain(this: void, source: Prompt[]): PromptsDto {
+    const result = new PromptsDto();
+    result.items = source.map(PromptDto.fromDomain);
     return result;
   }
 }

@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PromptEntity, PromptRepository } from 'src/domain/database';
 import { User } from 'src/domain/users';
+import { assignDefined } from 'src/lib';
 import { Prompt } from '../interfaces';
 
 export class CreatePrompt {
@@ -27,13 +28,11 @@ export class CreatePromptHandler implements ICommandHandler<CreatePrompt, Create
   ) {}
 
   async execute(command: CreatePrompt): Promise<CreatePromptResponse> {
-    const entity = this.prompts.create({
-      title: command.values.title,
-      description: command.values.description,
-      promptText: command.values.promptText,
-      userId: command.user.id,
-      isFavorite: false,
-    });
+    const { title, description, promptText } = command.values;
+    const { user } = command;
+
+    const entity = this.prompts.create();
+    assignDefined(entity, { title, description, promptText, userId: user.id, isFavorite: false });
 
     const created = await this.prompts.save(entity);
     return new CreatePromptResponse(created);
