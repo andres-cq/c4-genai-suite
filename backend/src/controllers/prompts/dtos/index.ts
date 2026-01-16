@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
-import { PromptEntity } from 'src/domain/database';
+import { Prompt } from 'src/domain/prompts';
 
 export class CreatePromptDto {
   @ApiProperty({ description: 'The title of the prompt.', required: true })
@@ -42,7 +42,7 @@ export class PromptDto {
   @ApiProperty({ description: 'The last update timestamp.', required: true, type: String, format: 'date' })
   updatedAt!: Date;
 
-  static fromDomain(source: PromptEntity): PromptDto {
+  static fromDomain(source: Prompt): PromptDto {
     const result = new PromptDto();
     result.id = source.id;
     result.title = source.title;

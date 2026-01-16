@@ -16,7 +16,9 @@ export class PromptsController {
   @ApiOperation({ operationId: 'createPrompt', description: 'Create a new prompt.' })
   @ApiOkResponse({ type: PromptDto })
   async createPrompt(@Req() req: Request, @Body() body: CreatePromptDto) {
-    const result: CreatePromptResponse = await this.commandBus.execute(new CreatePrompt(req.user, body));
+    const command = new CreatePrompt(req.user, body);
+
+    const result: CreatePromptResponse = await this.commandBus.execute(command);
 
     return PromptDto.fromDomain(result.prompt);
   }

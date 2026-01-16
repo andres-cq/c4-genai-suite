@@ -2,6 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PromptEntity, PromptRepository } from 'src/domain/database';
 import { User } from 'src/domain/users';
+import { Prompt } from '../interfaces';
 
 export class CreatePrompt {
   constructor(
@@ -15,7 +16,7 @@ export class CreatePrompt {
 }
 
 export class CreatePromptResponse {
-  constructor(public readonly prompt: PromptEntity) {}
+  constructor(public readonly prompt: Prompt) {}
 }
 
 @CommandHandler(CreatePrompt)
