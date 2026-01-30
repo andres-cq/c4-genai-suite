@@ -206,6 +206,18 @@
       "title": "Speech To Text",
       "description": "Allows speech input via microphone icon"
     },
+    "transcribe": {
+      "title": "Azure Transcribe",
+      "description": "Transcribe audio recordings to text using Azure OpenAI Whisper",
+      "apiKey": "API Key",
+      "apiKeyHint": "Your Azure OpenAI API key",
+      "instanceName": "Instance Name",
+      "instanceNameHint": "Azure OpenAI resource name",
+      "deploymentName": "Deployment Name",
+      "deploymentNameHint": "Whisper deployment name configured in your Azure OpenAI resource",
+      "apiVersion": "API Version",
+      "apiVersionHint": "Azure OpenAI API version"
+    },
     "filesInConversation": {
       "title": "Search Files in Chat",
       "description": "Enables the LLM to search files uploaded via the paperclip to a conversation.",
