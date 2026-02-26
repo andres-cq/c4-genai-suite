@@ -18,6 +18,15 @@ vi.mock('react-syntax-highlighter/dist/esm/styles/prism', () => ({
   vscDarkPlus: {},
 }));
 
+vi.mock('mermaid', () => ({
+  default: {
+    initialize: vi.fn(),
+    render: vi.fn(async (id, code) => {
+      return { svg: `<svg id="${id}"><text>Diagram: ${code.substring(0, 20)}...</text></svg>` };
+    }),
+  },
+}));
+
 describe('Markdown component', () => {
   it('renders table correctly', () => {
     const content = '| Header1 | Header2 |\n|---------|---------|\n| Hello   | C4   |';
@@ -77,5 +86,24 @@ describe('Markdown component', () => {
 
     const copyIcon = screen.getByTestId('copy-code-button');
     expect(copyIcon).toBeInTheDocument();
+  });
+
+  it('renders mermaid diagram correctly', async () => {
+    const content = '```mermaid\ngraph TD\n    A[Start] --> B[End]\n```';
+    render(<Markdown>{content}</Markdown>);
+
+    const mermaidContainer = document.querySelector('div.my-4.flex.justify-center.overflow-x-auto');
+    expect(mermaidContainer).toBeInTheDocument();
+  });
+
+  it('renders mermaid diagram with error fallback', async () => {
+    const { default: mermaid } = await import('mermaid');
+    vi.mocked(mermaid.render).mockRejectedValueOnce(new Error('Invalid diagram'));
+
+    const content = '```mermaid\ninvalid diagram syntax\n```';
+    render(<Markdown>{content}</Markdown>);
+
+    const errorMessage = await screen.findByText(/Diagram rendering error/);
+    expect(errorMessage).toBeInTheDocument();
   });
 });

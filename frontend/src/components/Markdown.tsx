@@ -7,7 +7,9 @@ import { toast } from 'react-toastify';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-import 'katex/dist/katex.min.css'; // Import KaTeX CSS
+import 'katex/dist/katex.min.css';
+import mermaid from 'mermaid';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useTransientNavigate } from 'src/hooks';
 import { cn } from 'src/lib';
 import { texts } from 'src/texts';
@@ -114,6 +116,10 @@ function CodeBlock(props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLEleme
     }
   };
 
+  if (language === 'mermaid' && typeof children === 'string') {
+    return <MermaidBlock code={children} />;
+  }
+
   return typeof children === 'string' ? (
     <div className="group relative max-w-full overflow-x-auto">
       <Prism {...other} language={language} style={vscDarkPlus} customStyle={{ backgroundColor: 'transparent', padding: 0 }}>
@@ -127,6 +133,48 @@ function CodeBlock(props: React.DetailedHTMLProps<React.HTMLAttributes<HTMLEleme
     </div>
   ) : (
     <Code {...props}>{children}</Code>
+  );
+}
+
+function MermaidBlock({ code }: { code: string }) {
+  const id = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [svg, setSvg] = useState<string>('');
+  const [error, setError] = useState<string>('');
+
+  useEffect(() => {
+    mermaid.initialize({ startOnLoad: false, theme: 'default' });
+  }, []);
+
+  useEffect(() => {
+    const renderMermaid = async () => {
+      try {
+        const { svg } = await mermaid.render(`mermaid-${id.replace(/:/g, '')}`, code);
+        setSvg(svg);
+        setError('');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to render diagram');
+      }
+    };
+    if (code) {
+      renderMermaid();
+    }
+  }, [code, id]);
+
+  if (error) {
+    return (
+      <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-600">
+        <strong>Diagram rendering error:</strong> {error}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="my-4 flex justify-center overflow-x-auto"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
   );
 }
 
