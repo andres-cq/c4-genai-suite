@@ -82,6 +82,12 @@ export function ConversationPage(props: ConversationPageProps) {
               <ChatHistory agentName={agentName} editMessage={submitMessage} />
             </div>
           )}
+          {/* Print-only container that renders all messages for printing */}
+          {messages.length > 0 && (
+            <div className="print-only mx-auto box-border hidden w-full max-w-[min(800px,_100%)] px-4 py-4">
+              <ChatHistory agentName={agentName} editMessage={submitMessage} />
+            </div>
+          )}
           <div className={`${!messages.length && 'grow'} flex shrink-0 flex-col items-center justify-center px-4`}>
             {!messages.length && <h2 className="mb-6 text-center text-3xl font-bold">{texts.chat.welcomeText}</h2>}
             <div

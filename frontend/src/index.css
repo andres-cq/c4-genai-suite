@@ -4,12 +4,12 @@
 @import 'react-pdf/dist/Page/AnnotationLayer.css';
 @import 'react-pdf/dist/Page/TextLayer.css';
 
-@plugin "daisyui" {
+@plugin 'daisyui' {
   themes:
     light --default,
     light --prefersdark;
 }
-@plugin "@tailwindcss/typography";
+@plugin '@tailwindcss/typography';
 @theme {
   --color-google: #db4437;
   --color-google-hover: rgb(209, 51, 38);
@@ -118,7 +118,7 @@ input[type='number'] {
 }
 
 .nav-menu li {
-  @apply px-4 py-2 hover:font-semibold hover:text-black hover:bg-gray-100;
+  @apply px-4 py-2 hover:bg-gray-100 hover:font-semibold hover:text-black;
 }
 
 .nav-menu li a.active {
@@ -171,4 +171,79 @@ input[type='number'] {
 
 * {
   overflow-wrap: anywhere;
+}
+
+@media print {
+  /* Hide non-essential UI elements */
+  .chat-conversations,
+  .chat-main > div:not(.print-only),
+  .mantine-ActionIcon-root,
+  .chat-input-container,
+  nav,
+  header,
+  footer,
+  button {
+    display: none !important;
+  }
+
+  /* Reset chat container for print */
+  .chat-main {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .chat-main > div.overflow-auto {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+
+  /* Show print-only container */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Print-specific styles for chat messages */
+  .print-only .chat-item {
+    page-break-inside: avoid;
+    page-break-after: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .print-only .ai-message,
+  .print-only .human-message {
+    padding: 0.5rem 0;
+  }
+
+  /* Optimize typography for print */
+  .print-only {
+    font-size: 12pt;
+    line-height: 1.5;
+    color: black !important;
+    background: white !important;
+  }
+
+  .print-only pre,
+  .print-only code {
+    background: #f5f5f5 !important;
+    border: 1px solid #ddd !important;
+    font-size: 10pt !important;
+  }
+
+  /* Ensure markdown content prints properly */
+  .print-only .markdown {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .print-only .markdown pre {
+    overflow: visible !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+  }
+
+  /* Remove animations for print */
+  .print-only * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
