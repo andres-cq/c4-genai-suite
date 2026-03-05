@@ -57,7 +57,11 @@ export function ConversationPage(props: ConversationPageProps) {
   const showRateThisConversation = !isChatLoading && !chat.rating && messages.length > 10;
   const showScrollToBottomButton = canScrollToBottom && !isAiWriting;
   return (
-    <div className={'relative mx-auto flex flex-col pb-2'} style={{ height: 'calc(100vh - 48px)' }} {...getRootProps()}>
+    <div
+      className={'conversation-page relative mx-auto flex flex-col pb-2'}
+      style={{ height: 'calc(100vh - 48px)' }}
+      {...getRootProps()}
+    >
       <input {...getInputProps()} className="hidden" />
       {isDragActive && (
         <>
@@ -65,17 +69,17 @@ export function ConversationPage(props: ConversationPageProps) {
           {isDragReject && <DragAndDropLayout.InvalidFileFormat allowedFileNameExtensions={allowedFileNameExtensions} />}
         </>
       )}
-      <div className="bg-white p-3">
+      <div className="screen-only bg-white p-3">
         <Configuration canEditConfiguration={true} />
       </div>
       {isChatLoading ? (
-        <div className="fade-in w-full bg-white" style={{ height: 'calc(100vh - 4rem)' }} />
+        <div className="screen-only fade-in w-full bg-white" style={{ height: 'calc(100vh - 4rem)' }} />
       ) : (
         <>
           {messages.length > 0 && (
             <div
               className={
-                'fade-in overflow-anchor-none mx-auto box-border w-full max-w-[min(800px,_100%)] grow overflow-auto px-4'
+                'screen-only fade-in overflow-anchor-none mx-auto box-border w-full max-w-[min(800px,_100%)] grow overflow-auto px-4'
               }
               ref={containerRef}
             >
@@ -88,7 +92,7 @@ export function ConversationPage(props: ConversationPageProps) {
               <ChatHistory agentName={agentName} editMessage={submitMessage} />
             </div>
           )}
-          <div className={`${!messages.length && 'grow'} flex shrink-0 flex-col items-center justify-center px-4`}>
+          <div className={`${!messages.length && 'grow'} screen-only flex shrink-0 flex-col items-center justify-center px-4`}>
             {!messages.length && <h2 className="mb-6 text-center text-3xl font-bold">{texts.chat.welcomeText}</h2>}
             <div
               className={cn(
