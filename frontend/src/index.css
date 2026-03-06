@@ -208,7 +208,6 @@ input[type='number'] {
     width: 100% !important;
   }
 
-  .screen-only,
   .chat-conversations,
   #left,
   #right,
@@ -221,7 +220,11 @@ input[type='number'] {
     display: none !important;
   }
 
-  .print-only {
+  .conversation-page > :not(.conversation-history):not(input) {
+    display: none !important;
+  }
+
+  .conversation-history {
     display: block !important;
     width: 100% !important;
     max-width: none !important;
@@ -233,7 +236,7 @@ input[type='number'] {
     line-height: 1.5;
   }
 
-  .print-only [data-testid='chat-item'] {
+  .conversation-history [data-testid='chat-item'] {
     break-inside: auto;
     page-break-inside: auto;
     margin-bottom: 1rem;
@@ -241,41 +244,41 @@ input[type='number'] {
     border-bottom: 1px solid #e5e7eb;
   }
 
-  .print-only [data-testid='chat-item']:last-child {
+  .conversation-history [data-testid='chat-item']:last-child {
     margin-bottom: 0;
     padding-bottom: 0;
     border-bottom: 0;
   }
 
-  .print-only .markdown,
-  .print-only .prose {
+  .conversation-history .markdown,
+  .conversation-history .prose {
     max-width: none !important;
     color: #111 !important;
   }
 
-  .print-only pre {
+  .conversation-history pre {
     white-space: pre-wrap !important;
     overflow: visible !important;
     break-inside: auto;
     page-break-inside: auto;
   }
 
-  .print-only code {
+  .conversation-history code {
     white-space: pre-wrap !important;
     word-break: break-word !important;
   }
 
-  .print-only [data-testid='copy-code-button'] {
+  .conversation-history [data-testid='copy-code-button'] {
     display: none !important;
   }
 
-  .print-only p,
-  .print-only li {
+  .conversation-history p,
+  .conversation-history li {
     orphans: 3;
     widows: 3;
   }
 
-  .print-only * {
+  .conversation-history * {
     animation: none !important;
     transition: none !important;
   }
